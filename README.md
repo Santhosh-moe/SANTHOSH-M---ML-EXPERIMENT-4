@@ -11,8 +11,8 @@
 
 
 
-Introduce matrix operations used in ML: transpose, inverse, solve linear systems, eigen 
-decomposition.
+Train logistic regression; compute accuracy, precision, recall, F1, AUC and plot ROC. 
+
 
 
 
@@ -24,7 +24,7 @@ decomposition.
 
 
 
-Direct use of numpy.linalg routines; relate to linear regression normal equations. 
+Logistic regression (MLE). ROC uses predicted probabilities. 
 
 
 
@@ -39,9 +39,7 @@ Direct use of numpy.linalg routines; relate to linear regression normal equation
 
 
 
-Linear algebra (matrix inversion, eigen-decomposition) underpins PCA, linear models, 
-and many optimization problems. Conditioning/invertibility matters.
-
+Logistic function models log-odds; evaluation depends on use-case (class imbalance, etc.).
 
 
 
@@ -51,32 +49,35 @@ and many optimization problems. Conditioning/invertibility matters.
 
 
 import numpy as np 
-A = np.array([[2.0, 1.0],[1.0, 3.0]]) 
-b = np.array([1.0, 2.0]) 
-print("Matrix A:\n", A) 
-print("\nTranspose A^T:\n", A.T) 
-print("\nInverse A^-1:\n", np.linalg.inv(A)) 
-eigvals, eigvecs = np.linalg.eig(A) 
-print("\nEigenvalues:", np.round(eigvals,4)) 
-x = np.linalg.solve(A,b) 
-print("\nSolve A x = b --> x:", np.round(x,4))
+from sklearn.linear_model import LogisticRegression 
+from sklearn.metrics import accuracy_score, precision_score, 
+recall_score, f1_score, roc_auc_score, roc_curve 
+import matplotlib.pyplot as plt 
+X = np.array([[2,3],[1,2],[3,1],[6,5],[7,8],[8,6]]) 
+y = np.array([0,0,0,1,1,1]) 
+model = LogisticRegression().fit(X,y) 
+y_pred = model.predict(X) 
+probs = model.predict_proba(X)[:,1] 
+print('Accuracy:', accuracy_score(y,y_pred)) 
+print('Precision:', precision_score(y,y_pred)) 
+print('Recall:', recall_score(y,y_pred)) 
+print('F1:', f1_score(y,y_pred)) 
+print('AUC:', roc_auc_score(y,probs)) 
+fpr, tpr, _ = roc_curve(y, probs) 
+plt.plot(fpr,tpr); plt.plot([0,1],[0,1],'--'); plt.xlabel('FPR'); 
+plt.ylabel('TPR'); plt.title('ROC Curve'); plt.show()
 
 
 
 ## OUTPUT:
 
 
-Matrix A: 
-[[2. 1.] 
-[1. 3.]] 
-Transpose A^T: 
-[[2. 1.] 
-[1. 3.]] 
-Inverse A^-1: 
-[[ 0.6 -0.2] 
-[-0.2  0.4]] 
-Eigenvalues: [3.3028 1.6972] 
-Solve A x = b --> x: [0.2 0.6]
+Accuracy: 1.0 
+Precision: 1.0 
+Recall: 1.0 
+F1: 1.0 
+AUC: 1.0 
+(ROC plot shown inline) 
 
 ```
 
@@ -87,5 +88,5 @@ Solve A x = b --> x: [0.2 0.6]
 
 
 
-Students see concrete matrix computations and how to solve linear systems; relate 
-solve() to normal equations in linear regression. 
+Students learn evaluation metrics and how probability thresholds trade off 
+precision/recall.
